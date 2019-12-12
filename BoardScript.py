@@ -15,6 +15,7 @@ class Board:
         self.player_coordinates = []
         self.number_of_moves = 0
         self.total_score = 0
+        self.finished = False
         self.board = []     # column, row, trophy, player, obstacle, bonus, worth
 
     def initialize_board(self) -> None:
@@ -60,9 +61,9 @@ class Board:
             for column_index, value in enumerate(row):
                 if value[2] == 1:
                     self.board[row_index][column_index][6] = self.reward_value
-                elif value [4] == 1:
+                elif value[4] == 1:
                     self.board[row_index][column_index][6] = -self.reward_value
-                elif value [5] == 1:
+                elif value[5] == 1:
                     self.board[row_index][column_index][6] = self.bonus_value
 
     def draw_board(self) -> None:
@@ -107,3 +108,5 @@ class Board:
             self.board[self.player_coordinates[1]][self.player_coordinates[0]][4] = 0
         self.number_of_moves += 1
         self.actualise_worth()
+        if self.board[self.player_coordinates[1]][self.player_coordinates[0]][2] == 1:
+            self.finished = True
