@@ -47,3 +47,19 @@ class Board:
                     self.board[row_index][column_index][5] = self.max_learning_value
                 elif value [4] == 1:
                     self.board[row_index][column_index][5] = -self.max_learning_value
+
+    def draw_board(self) -> None:
+        spaces = '\t'
+        for row in self.board:
+            print(spaces, end='')
+            for value in row:
+                if value[2] == 1:
+                    print('T', end='')
+                elif value[3] == 1:
+                    print('P', end='')
+                elif value[4] == 1:
+                    print('O', end='')
+                else:
+                    print('.', end='')
+                print(spaces, end='')
+            print()
