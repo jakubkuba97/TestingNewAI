@@ -5,10 +5,12 @@
 
 
 class Board:
-    def __init__(self, dimensions: int = 10, obstacles: int = 2, disappearing_obstacles: bool = False, bonuses: int = 2, bonus_value: int = 10, reward_value: int = 100) -> None:
+    def __init__(self, dimensions: int = 10, obstacles: int = 2, disappearing_obstacles: bool = False, bonuses: int = 2, bonus_value: int = 10,
+                 reward_value: int = 100, obstacle_ends: bool = False) -> None:
         self.dimensions = dimensions
         self.obstacles = obstacles
         self.disappearing_obstacles = disappearing_obstacles
+        self.obstacle_ends = obstacle_ends
         self.bonuses = bonuses
         self.reward_value = reward_value
         self.bonus_value = bonus_value
@@ -119,5 +121,8 @@ class Board:
             self.board[self.player_coordinates[1]][self.player_coordinates[0]][4] = 0
         self.number_of_moves += 1
         self.actualise_worth()
-        if self.board[self.player_coordinates[1]][self.player_coordinates[0]][2] == 1:
+        # finishing conditions
+        if self.player_coordinates == self.trophy_coordinates:
+            self.finished = True
+        elif self.obstacle_ends and self.player_coordinates in self.obstacle_coordinates:
             self.finished = True

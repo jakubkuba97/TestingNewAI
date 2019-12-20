@@ -13,8 +13,9 @@ from keras.optimizers import Adam
 
 class Env:
     def __init__(self, draw: bool = False,
-                 dimensions: int = 10, obstacles: int = 2, disappearing_obstacles: bool = False, bonuses: int = 2, bonus_value: int = 10, reward_value: int = 100) -> None:
-        self.board = BoardScript.Board(dimensions=dimensions, obstacles=obstacles, disappearing_obstacles=disappearing_obstacles, bonuses=bonuses, bonus_value=bonus_value, reward_value=reward_value)
+                 dimensions: int = 10, obstacles: int = 2, disappearing_obstacles: bool = False, bonuses: int = 2, bonus_value: int = 10, reward_value: int = 100, obstacle_ends: bool = False) -> None:
+        self.board = BoardScript.Board(dimensions=dimensions, obstacles=obstacles, disappearing_obstacles=disappearing_obstacles, bonuses=bonuses,
+                                       bonus_value=bonus_value, reward_value=reward_value, obstacle_ends=obstacle_ends)
         self.board.initialize_board()
         self.draw = draw
         self.no_obstacles = True if obstacles <= 0 else False
