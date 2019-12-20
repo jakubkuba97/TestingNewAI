@@ -5,6 +5,10 @@
 
 import BoardScript
 import pickle
+import numpy as np
+from keras.models import Sequential
+from keras.layers import Dense, Activation, Flatten
+from keras.optimizers import Adam
 
 
 class Env:
@@ -15,6 +19,7 @@ class Env:
         self.draw = draw
         self.no_obstacles = True if obstacles <= 0 else False
         self.no_bonuses = True if bonuses <= 0 else False
+        self.file_name = 'deep_maze_ai'
         # player visibility
         self.offset_to_trophy = []
         self.offset_to_obstacles = [[]]
@@ -22,6 +27,15 @@ class Env:
         self.offset_to_corners = [[]]
         # player actions
         self.possible_actions = ['up', 'down', 'left', 'right']
+        # model
+        self.model = Sequential()
+        self.model.add(Flatten(input_shape=(1, dimensions*dimensions)))
+        self.model.add(Dense(dimensions * len(self.possible_actions)))
+        self.model.add(Dense(dimensions))
+        self.model.add(Activation('relu'))
+        self.model.add(Dense(len(self.possible_actions)))
+        self.model.add(Activation('linear'))
+        # print(self.model.summary())
 
     def actualize_offsets(self) -> None:
         if not self.no_obstacles:
