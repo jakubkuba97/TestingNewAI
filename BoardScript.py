@@ -13,6 +13,10 @@ class Board:
         self.reward_value = reward_value
         self.bonus_value = bonus_value
         self.player_coordinates = []
+        self.trophy_coordinates = []
+        self.obstacle_coordinates = [[]]
+        self.bonus_coordinates = [[]]
+        self.borders_coordinates = [[0, 0], [self.dimensions, self.dimensions]]
         self.number_of_moves = 0
         self.total_score = 0
         self.finished = False
@@ -49,6 +53,9 @@ class Board:
                 coordinates = [rd(0, self.dimensions - 1), rd(0, self.dimensions - 1)]
             bonuses_coordinates.append(coordinates)
         self.player_coordinates = player_coordinates
+        self.trophy_coordinates = trophy_coordinates
+        self.bonus_coordinates = bonuses_coordinates
+        self.obstacle_coordinates = obstacle_coordinates
         self.board[trophy_coordinates[1]][trophy_coordinates[0]][2] = 1
         self.board[player_coordinates[1]][player_coordinates[0]][3] = 1
         for coordinate in obstacle_coordinates:
@@ -57,6 +64,8 @@ class Board:
             self.board[coordinate[1]][coordinate[0]][5] = 1
 
     def actualise_worth(self) -> None:
+        self.bonus_coordinates = [[]]
+        bonuses_coordinates = []
         for row_index, row in enumerate(self.board):
             for column_index, value in enumerate(row):
                 if value[2] == 1:
@@ -65,6 +74,8 @@ class Board:
                     self.board[row_index][column_index][6] = -self.reward_value
                 elif value[5] == 1:
                     self.board[row_index][column_index][6] = self.bonus_value
+                    bonuses_coordinates.append([column_index, row_index])
+        self.bonus_coordinates = bonuses_coordinates
 
     def draw_board(self) -> None:
         spaces = '\t'
