@@ -19,7 +19,7 @@ class Env:
         self.draw = draw
         self.no_obstacles = True if obstacles <= 0 else False
         self.no_bonuses = True if bonuses <= 0 else False
-        self.file_name = 'deep_maze_ai'
+        self.file_name = 'deep_maze_ai.pkl'
         # player visibility
         self.offset_to_trophy = []
         self.offset_to_obstacles = [[]]
@@ -28,14 +28,22 @@ class Env:
         # player actions
         self.possible_actions = ['up', 'down', 'left', 'right']
         # model
-        self.model = Sequential()
-        self.model.add(Flatten(input_shape=(1, dimensions*dimensions)))
-        self.model.add(Dense(dimensions * len(self.possible_actions)))
-        self.model.add(Dense(dimensions))
-        self.model.add(Activation('relu'))
-        self.model.add(Dense(len(self.possible_actions)))
-        self.model.add(Activation('linear'))
+        try:
+            with open(self.file_name, 'rb') as file:
+                self.model = pickle.load(file)
+        except FileNotFoundError:
+            self.model = Sequential()
+            self.model.add(Flatten(input_shape=(1, dimensions*dimensions)))
+            self.model.add(Dense(dimensions * len(self.possible_actions)))
+            self.model.add(Dense(dimensions))
+            self.model.add(Activation('relu'))
+            self.model.add(Dense(len(self.possible_actions)))
+            self.model.add(Activation('linear'))
         # print(self.model.summary())
+
+    def save_model(self) -> None:
+        with open(self.file_name, 'wb') as file:
+            pickle.dump(self.model, file, protocol=pickle.HIGHEST_PROTOCOL)
 
     def actualize_offsets(self) -> None:
         if not self.no_obstacles:
