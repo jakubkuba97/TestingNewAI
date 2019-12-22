@@ -10,6 +10,10 @@ from keras.models import Sequential
 from keras.layers import Dense, Activation, Flatten
 from keras.optimizers import Adam
 
+from rl.agents.dqn import DQNAgent
+from rl.policy import EpsGreedyQPolicy
+from rl.memory import SequentialMemory
+
 
 class Env:
     def __init__(self, draw: bool = False,
@@ -64,18 +68,15 @@ class Env:
                                   [self.board.player_coordinates[0] - self.board.borders_coordinates[1][0] + 1, self.board.player_coordinates[1] - self.board.borders_coordinates[1][1] + 1]]
 
     def start_game(self) -> None:
+        from time import sleep
+        wait_time = 0.5
         self.actualize_offsets()
         if self.draw:
             self.board.draw_board()
             print('Total moves: %i, total score: %i' % (self.board.number_of_moves, self.board.total_score))
+            sleep(wait_time)
         while not self.board.finished:
-            x = input()
-            self.board.move(x)
-            self.board.draw_board()
-            self.actualize_offsets()
-            print()
-            print('Total moves: %i, total score: %i' % (self.board.number_of_moves, self.board.total_score))
-            print()
+            pass
 
     def start_manual_game(self) -> None:
         self.board.draw_board()
