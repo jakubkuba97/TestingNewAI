@@ -5,7 +5,6 @@
 
 import BoardScript
 import pickle
-import numpy as np
 from keras.models import Sequential
 from keras.layers import Dense, Activation, Flatten
 from keras.optimizers import Adam
@@ -30,25 +29,33 @@ class Env:
         self.offset_to_obstacles = [[]]
         self.offset_to_bonuses = [[]]
         self.offset_to_corners = [[]]
+        self.player_visibility = [self.offset_to_trophy, self.offset_to_obstacles, self.offset_to_bonuses, self.offset_to_corners]
         # player actions
         self.possible_actions = ['up', 'down', 'left', 'right']
         # model
         try:
             with open(self.file_name, 'rb') as file:
-                self.model = pickle.load(file)
+                self.dqn = pickle.load(file)
         except FileNotFoundError:
-            self.model = Sequential()
-            self.model.add(Flatten(input_shape=(1, dimensions*dimensions)))
-            self.model.add(Dense(dimensions * len(self.possible_actions)))
-            self.model.add(Dense(dimensions))
-            self.model.add(Activation('relu'))
-            self.model.add(Dense(len(self.possible_actions)))
-            self.model.add(Activation('linear'))
-        # print(self.model.summary())
+            model = Sequential()
+            model.add(Flatten(input_shape=(1, dimensions*dimensions)))
+            model.add(Dense(dimensions * len(self.possible_actions)))
+            model.add(Dense(dimensions))
+            model.add(Activation('relu'))
+            model.add(Dense(len(self.possible_actions)))
+            model.add(Activation('linear'))
+            # print(self.model.summary())
+
+            policy = EpsGreedyQPolicy()
+            memory = SequentialMemory(limit=50000, window_length=1)
+            self.dqn = DQNAgent(model=model, nb_actions=len(self.possible_actions), memory=memory, nb_steps_warmup=10, target_model_update=1e-2, policy=policy)
+            self.dqn.compile(Adam(lr=1e-3), metrics=['mae'])
+
+            # self.save_model()
 
     def save_model(self) -> None:
         with open(self.file_name, 'wb') as file:
-            pickle.dump(self.model, file, protocol=pickle.HIGHEST_PROTOCOL)
+            pickle.dump(self.dqn, file, protocol=pickle.HIGHEST_PROTOCOL)
 
     def actualize_offsets(self) -> None:
         if not self.no_obstacles:
@@ -66,6 +73,7 @@ class Env:
         self.offset_to_trophy = [self.board.player_coordinates[0] - self.board.trophy_coordinates[0], self.board.player_coordinates[1] - self.board.trophy_coordinates[1]]
         self.offset_to_corners = [[self.board.player_coordinates[0] - self.board.borders_coordinates[0][0], self.board.player_coordinates[1] - self.board.borders_coordinates[0][1]],
                                   [self.board.player_coordinates[0] - self.board.borders_coordinates[1][0] + 1, self.board.player_coordinates[1] - self.board.borders_coordinates[1][1] + 1]]
+        self.player_visibility = [self.offset_to_trophy, self.offset_to_obstacles, self.offset_to_bonuses, self.offset_to_corners]
 
     def start_game(self) -> None:
         from time import sleep
