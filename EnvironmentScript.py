@@ -76,3 +76,23 @@ class Env:
             print()
             print('Total moves: %i, total score: %i' % (self.board.number_of_moves, self.board.total_score))
             print()
+
+    def start_manual_game(self) -> None:
+        self.board.draw_board()
+        print('Total moves: %i, total score: %i' % (self.board.number_of_moves, self.board.total_score))
+        while not self.board.finished:
+            left = 'a'
+            right = 'd'
+            down = 's'
+            up = 'w'
+            conversion = {left: 'left', right: 'right', down: 'down', up: 'up'}
+            movement = input()
+            try:
+                self.board.move(conversion[movement])
+            except KeyError:
+                self.board.move(' ')
+            self.board.draw_board()
+            self.actualize_offsets()
+            print()
+            print('Total moves: %i, total score: %i' % (self.board.number_of_moves, self.board.total_score))
+            print()

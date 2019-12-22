@@ -39,7 +39,7 @@ class DeepIntelligence:
             game_1 = EnvironmentScript.Env(draw=draw_this_one, dimensions=self.board_size_of_board, obstacles=self.board_number_of_obstacles, disappearing_obstacles=self.board_disappearing_obstacles,
                                            bonuses=self.board_number_of_bonuses, bonus_value=self.env_bonus_value, reward_value=self.env_max_reward_value, obstacle_ends=self.board_obstacle_ends_game)
             game_1.start_game()
-            game_1.board.total_score += game_1.board.number_of_moves * -self.env_move_penalty
+            game_1.board.total_score -= game_1.board.number_of_moves * self.env_move_penalty
             self.env_epsilon *= self.env_epsilon_decay
             if episode % self.env_show_every == 0:
                 self.special_episode = True
