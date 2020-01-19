@@ -4,14 +4,14 @@
 """
 
 import BoardScript
-import pickle
-from keras.models import Sequential
-from keras.layers import Dense, Activation, Flatten
-from keras.optimizers import Adam
-
-from rl.agents.dqn import DQNAgent
-from rl.policy import EpsGreedyQPolicy
-from rl.memory import SequentialMemory
+# import pickle
+# from keras.models import Sequential
+# from keras.layers import Dense, Activation, Flatten
+# from keras.optimizers import Adam
+#
+# from rl.agents.dqn import DQNAgent
+# from rl.policy import EpsGreedyQPolicy
+# from rl.memory import SequentialMemory
 
 
 class Env:
@@ -33,29 +33,29 @@ class Env:
         # player actions
         self.possible_actions = ['up', 'down', 'left', 'right']
         # model
-        try:
-            with open(self.file_name, 'rb') as file:
-                self.dqn = pickle.load(file)
-        except FileNotFoundError:
-            model = Sequential()
-            model.add(Flatten(input_shape=(1, dimensions*dimensions)))
-            model.add(Dense(dimensions * len(self.possible_actions)))
-            model.add(Dense(dimensions))
-            model.add(Activation('relu'))
-            model.add(Dense(len(self.possible_actions)))
-            model.add(Activation('linear'))
-            # print(self.model.summary())
-
-            policy = EpsGreedyQPolicy()
-            memory = SequentialMemory(limit=50000, window_length=1)
-            self.dqn = DQNAgent(model=model, nb_actions=len(self.possible_actions), memory=memory, nb_steps_warmup=10, target_model_update=1e-2, policy=policy)
-            self.dqn.compile(Adam(lr=1e-3), metrics=['mae'])
-
-            # self.save_model()
-
-    def save_model(self) -> None:
-        with open(self.file_name, 'wb') as file:
-            pickle.dump(self.dqn, file, protocol=pickle.HIGHEST_PROTOCOL)
+    #     try:
+    #         with open(self.file_name, 'rb') as file:
+    #             self.dqn = pickle.load(file)
+    #     except FileNotFoundError:
+    #         model = Sequential()
+    #         model.add(Flatten(input_shape=(1, dimensions*dimensions)))
+    #         model.add(Dense(dimensions * len(self.possible_actions)))
+    #         model.add(Dense(dimensions))
+    #         model.add(Activation('relu'))
+    #         model.add(Dense(len(self.possible_actions)))
+    #         model.add(Activation('linear'))
+    #         # print(self.model.summary())
+    #
+    #         policy = EpsGreedyQPolicy()
+    #         memory = SequentialMemory(limit=50000, window_length=1)
+    #         self.dqn = DQNAgent(model=model, nb_actions=len(self.possible_actions), memory=memory, nb_steps_warmup=10, target_model_update=1e-2, policy=policy)
+    #         self.dqn.compile(Adam(lr=1e-3), metrics=['mae'])
+    #
+    #         # self.save_model()
+    #
+    # def save_model(self) -> None:
+    #     with open(self.file_name, 'wb') as file:
+    #         pickle.dump(self.dqn, file, protocol=pickle.HIGHEST_PROTOCOL)
 
     def actualize_offsets(self) -> None:
         if not self.no_obstacles:
@@ -74,17 +74,6 @@ class Env:
         self.offset_to_corners = [[self.board.player_coordinates[0] - self.board.borders_coordinates[0][0], self.board.player_coordinates[1] - self.board.borders_coordinates[0][1]],
                                   [self.board.player_coordinates[0] - self.board.borders_coordinates[1][0] + 1, self.board.player_coordinates[1] - self.board.borders_coordinates[1][1] + 1]]
         self.player_visibility = [self.offset_to_trophy, self.offset_to_obstacles, self.offset_to_bonuses, self.offset_to_corners]
-
-    def start_game(self) -> None:
-        from time import sleep
-        wait_time = 0.5
-        self.actualize_offsets()
-        if self.draw:
-            self.board.draw_board()
-            print('Total moves: %i, total score: %i' % (self.board.number_of_moves, self.board.total_score))
-            sleep(wait_time)
-        while not self.board.finished:
-            pass
 
     def start_manual_game(self) -> None:
         self.board.draw_board()
